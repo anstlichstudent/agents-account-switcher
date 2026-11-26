@@ -1,2 +1,7 @@
 __pycache__/
 *.py[cod]
+/.9router/
+/.codex/
+/.env
+/.env.*
+auth.json

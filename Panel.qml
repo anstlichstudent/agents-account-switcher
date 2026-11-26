@@ -8,8 +8,8 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "anstlich.account-switcher"
-  ipcTarget: "anstlich.account-switcher"
+  moduleName: "agent-tools.account-switcher"
+  ipcTarget: "agent-tools.account-switcher"
   manageIpc: false
 
   Commons.Translations {
@@ -187,7 +187,7 @@ Panel {
   }
 
   ShellIpc {
-    target: "anstlich.account-switcher"
+    target: "agent-tools.account-switcher"
 
     function open(): void { root.open() }
     function close(): void { root.close() }

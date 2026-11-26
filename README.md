@@ -19,11 +19,11 @@ quotas. The Codex tab also shows how many reset credits are available.
 
 ## Install
 
-Add and enable the plugin.
+Replace the example URL with the plugin repository URL. Add and enable the plugin.
 
 ```sh
-omarchy plugin add https://github.com/anstlichstudent/agents-account-switcher.git
-omarchy plugin enable anstlich.account-switcher right
+omarchy plugin add https://github.com/OWNER/REPOSITORY.git
+omarchy plugin enable agent-tools.account-switcher right
 ```
 
 From a local checkout, you can validate the package before you install it.
@@ -67,7 +67,7 @@ cover the provider, including all accounts.
 Run the following command to remove the plugin.
 
 ```sh
-omarchy plugin remove anstlich.account-switcher
+omarchy plugin remove agent-tools.account-switcher
 ```
 
 If you want to remove the saved snapshots, delete the cache directory shown
