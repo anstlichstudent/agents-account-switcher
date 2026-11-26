@@ -7,6 +7,10 @@ Switch accounts from the Omarchy bar with a local [9Router](https://github.com/d
 | **Codex** | ChatGPT OAuth account connected to **OpenAI Codex** in 9Router | 5-hour and weekly limits. Available reset credits appear when 9Router reports them. |
 | **AGY** | Google OAuth account connected to **Antigravity** in 9Router | Gemini 5-hour and weekly limits. |
 
+![Account Switcher with Codex and AGY quotas and masked account labels](assets/account-switcher-preview.png)
+
+The screenshot uses sample data and masked account labels.
+
 ## Set up local 9Router first
 
 1. Install and start 9Router on the same Linux machine that runs Omarchy. Follow the [9Router project README](https://github.com/decolua/9router) for installation.
@@ -35,8 +39,9 @@ omarchy plugin enable agent-tools.account-switcher right
 
 1. Close all sessions of the CLI you want to switch. For Codex, also close any apps that keep a Codex app server running.
 2. Open **Account Switcher** from the bar. Select **Codex** or **AGY**.
-3. Select the account you want to use. Wait for the **Active** label to move to that account.
-4. Open the CLI again.
+3. Select the account you want to use. Review the account in the confirmation dialog.
+4. Select **Switch** to replace the saved CLI credential. Wait for the **Active** label to move.
+5. Open the CLI again.
 
 Repeat these steps to return to a previous account. You can also sign in again through the CLI.
 
@@ -49,15 +54,15 @@ flowchart TD
     codex["Codex credential file"]
     agy["AGY entry in the Linux keyring"]
     router -->|OAuth account list and quotas| panel
-    panel -->|Select a Codex account| codex
-    panel -->|Select an AGY account| agy
+    panel -->|Confirm a Codex switch| codex
+    panel -->|Confirm an AGY switch| agy
 ```
 
 The plugin opens the 9Router database in read-only mode to list account connections. It requests quota data from 9Router on the same machine. After you add an account in 9Router, select **Refresh** in the panel to load the new list.
 
-The panel shows the last successful snapshot while it requests new data. The default refresh interval is 60 seconds. If refresh fails, the panel keeps the previous snapshot and marks it as stale. Turn off **Refresh when the panel is closed** in the widget settings to stop background refresh.
+The panel shows the last successful snapshot while it requests new data. The default refresh interval is 60 seconds. If refresh fails, the panel keeps the previous snapshot and marks it as stale. Turn off **Refresh when the panel is closed** in the widget settings to stop background refresh. Use **Show active account in bar** in the widget settings to control the bar label.
 
-When you select an account, the plugin reads the saved OAuth credentials for that connection. For Codex, it replaces `auth.json` in `CODEX_HOME`, which defaults to `~/.codex`. For AGY, it updates the existing keyring entry and checks that the new credential was saved. If that check fails, it tries to restore the previous entry.
+After you confirm the switch, the plugin reads the saved OAuth credentials for that connection. For Codex, it replaces `auth.json` in `CODEX_HOME`, which defaults to `~/.codex`. For AGY, it updates the existing keyring entry and checks that the new credential was saved. If that check fails, it tries to restore the previous entry.
 
 The reset badge shows the number of credits available. If an Omarchy usage collector has written provider statistics, **Tokens by model** shows totals for the provider across its accounts.
 

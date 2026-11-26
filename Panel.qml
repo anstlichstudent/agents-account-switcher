@@ -60,6 +60,7 @@ Panel {
   readonly property bool loading: providerCache.loading
   readonly property string errorMessage: providerCache.failed
     ? strings.t(providerCache.snapshot.updatedAt > 0 ? "error.stale" : "error.statusFailed") : ""
+  property var pendingAccount: null
   property bool swapping: false
   property string swappingName: ""
   property int selectedIndex: 0
@@ -144,11 +145,11 @@ Panel {
   }
 
   function refresh(force) {
-    if (!swapping) providerCache.refresh(force, "")
+    if (!swapping && !pendingAccount) providerCache.refresh(force, "")
   }
 
   function selectProvider(agy) {
-    if (swapping || agySelected === agy) return
+    if (swapping || pendingAccount || agySelected === agy) return
     agySelected = agy
     selectedIndex = Math.max(0, accounts.findIndex(function(account) { return account.active }))
     cursorActive = false
@@ -156,13 +157,19 @@ Panel {
     refresh(false)
   }
 
-  function switchAccount(account) {
-    if (!account || account.active || loading || swapping) return
-    var name = String(account.name || "")
-    if (name === "" || typeof account.id !== "string" || account.id === "") return
+  function requestSwitch(account) {
+    if (!account || account.active || loading || swapping || pendingAccount) return
+    if (!account.name || typeof account.id !== "string" || account.id === "") return
+    pendingAccount = account
+  }
+
+  function confirmSwitch() {
+    var account = pendingAccount
+    pendingAccount = null
+    if (!opened || !account || swapping) return
     switchError = ""
     swapping = true
-    swappingName = name
+    swappingName = account.name
     swappingAccount = account.id
     swapStderr = ""
     swapProc.command = agySelected
@@ -178,12 +185,7 @@ Panel {
 
   function activateSelected() {
     if (selectedIndex < 0 || selectedIndex >= accounts.length) return
-    switchAccount(accounts[selectedIndex])
-  }
-
-  function toggleBarLabel() {
-    root.settings = Object.assign({}, root.settings, { showAccountInBar: !root.showAccountInBar })
-    if (root.bar && root.bar.shell) root.bar.shell.updateEntryInline(root.moduleName, root.settings)
+    requestSwitch(accounts[selectedIndex])
   }
 
   ShellIpc {
@@ -209,6 +211,8 @@ Panel {
         }
       }
       selectedIndex = activeIdx
+    } else {
+      pendingAccount = null
     }
   }
 
@@ -264,8 +268,7 @@ Panel {
       ? root.plainText(root.activeAccount.name + (root.activeAccount.plan ? " (" + root.activeAccount.plan + ")" : ""))
       : strings.t("bar.tooltip")
     onPressed: function(b) {
-      if (b === Qt.RightButton) root.toggleBarLabel()
-      else root.toggle()
+      if (b === Qt.LeftButton) root.toggle()
     }
   }
 
@@ -283,6 +286,7 @@ Panel {
       id: keyCatcher
       anchors.fill: parent
       implicitHeight: mainColumn.implicitHeight
+      blocked: !!root.pendingAccount
 
       onMoveRequested: function(dx, dy) {
         if (dx !== 0) {
@@ -300,6 +304,11 @@ Panel {
       onCloseRequested: root.close()
 
       Keys.onPressed: function(event) {
+        if (root.pendingAccount) {
+          if (!event.isAutoRepeat) switchConfirm.handleKey(event)
+          event.accepted = true
+          return
+        }
         if (event.key === Qt.Key_R) {
           root.refresh(true)
           event.accepted = true
@@ -464,7 +473,7 @@ Panel {
                   root.cursorActive = true
                   root.selectedIndex = rowSurface.index
                 }
-                onClicked: root.switchAccount(rowSurface.modelData)
+                onClicked: root.requestSwitch(rowSurface.modelData)
               }
 
               Column {
@@ -683,6 +692,22 @@ Panel {
           font.pixelSize: Style.font.caption
           wrapMode: Text.WordWrap
         }
+      }
+
+      ConfirmDialog {
+        id: switchConfirm
+        anchors.fill: parent
+        z: 10
+        opened: !!root.pendingAccount
+        message: root.pendingAccount
+          ? strings.t(root.agySelected ? "agy.confirmSwitch" : "codex.confirmSwitch").arg(root.pendingAccount.name)
+          : ""
+        confirmText: strings.t("account.confirmSwitch")
+        foreground: root.foreground
+        fontFamily: root.fontFamily
+        onOpenedChanged: if (opened) selectedIndex = 0
+        onCanceled: root.pendingAccount = null
+        onConfirmed: root.confirmSwitch()
       }
     }
   }
