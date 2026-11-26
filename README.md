@@ -28,12 +28,22 @@ You need Omarchy with shell plugin support and Python 3.10 or later. The manifes
 - **Codex.** Install the Codex CLI and use the file credential store. Set `cli_auth_credentials_store = "file"` in your Codex configuration. If you use a custom `CODEX_HOME`, set the same value in the environment of the Omarchy shell.
 - **AGY.** Install Antigravity CLI and `libsecret`, which supplies `secret-tool`. Sign in to AGY once to create its Linux Secret Service entry. Unlock the keyring before you use the AGY tab.
 
-Replace the example URL with the Git URL for this plugin. Add and enable the plugin.
+After you set up 9Router and the CLI you want to use, add and enable the plugin.
 
 ```sh
-omarchy plugin add https://github.com/OWNER/REPOSITORY.git
+omarchy plugin add https://github.com/anstlichstudent/agents-account-switcher
 omarchy plugin enable agent-tools.account-switcher right
 ```
+
+## Update the plugin
+
+To update a copy installed with `omarchy plugin add`, run this command.
+
+```sh
+omarchy plugin update agent-tools.account-switcher
+```
+
+Omarchy installs and updates from the current GitHub commit. To check which commit the Marketplace verified, open the [Account Switcher listing](https://plugins.omarchy.org/plugin.html?id=agent-tools.account-switcher).
 
 ## Switch accounts
 
