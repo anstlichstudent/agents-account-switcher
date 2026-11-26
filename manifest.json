@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "id": "anstlich.account-switcher",
+  "name": "Account Switcher",
+  "version": "1.2.0",
+  "author": "anstlich",
+  "license": "MIT",
+  "description": "Switch Codex and Antigravity CLI accounts from 9Router.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "activation": "on-demand",
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Account Switcher",
+    "description": "Switch Codex and Antigravity CLI accounts from 9Router.",
+    "category": "AI",
+    "aliases": [
+      "codex",
+      "9router",
+      "accounts",
+      "agy"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 60,
+      "showAccountInBar": true,
+      "refreshInBackground": true
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 15,
+        "max": 3600,
+        "step": 15,
+        "defaultValue": 60
+      },
+      {
+        "key": "showAccountInBar",
+        "type": "boolean",
+        "label": "Show active account in bar",
+        "defaultValue": true
+      },
+      {
+        "key": "refreshInBackground",
+        "type": "boolean",
+        "label": "Refresh when the panel is closed",
+        "defaultValue": true
+      }
+    ]
+  }
+}
